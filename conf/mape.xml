@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config>
+	<windowMonitor>5</windowMonitor>
+	<upper>0.7</upper>
+	<lower>0.3</lower>
+	<samplesReactive>5</samplesReactive>
+	<samplesPredictive>120</samplesPredictive>
+	<replicaReactive>1</replicaReactive>
+	<replicaPredictive>5</replicaPredictive>
+	<alertReactive>2</alertReactive>
+	<thresholdPredictive>0.25</thresholdPredictive>
+	<iterationPredictive>100000</iterationPredictive>
+	<Esync>5.0</Esync>
+</config>
