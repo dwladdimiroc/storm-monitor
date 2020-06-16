@@ -1,4 +1,4 @@
-package citiaps.monitorStorm.mape;
+package com.github.dwladdimiroc.stormMonitor.mape;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import org.apache.storm.thrift.transport.TFramedTransport;
 import org.apache.storm.thrift.transport.TSocket;
 import org.apache.storm.thrift.transport.TTransport;
 
-import citiaps.monitorStorm.eda.TopologyApp;
+import com.github.dwladdimiroc.stormMonitor.eda.TopologyApp;
 
 public class Execute {
 	private String IP_NIMBUS;

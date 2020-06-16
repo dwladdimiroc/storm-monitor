@@ -1,4 +1,4 @@
-package citiaps.monitorStorm.util;
+package com.github.dwladdimiroc.stormMonitor.util;
 
 import org.apache.storm.generated.Nimbus;
 import org.apache.storm.generated.TopologySummary;

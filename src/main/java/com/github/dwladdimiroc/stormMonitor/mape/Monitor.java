@@ -1,4 +1,4 @@
-package citiaps.monitorStorm.mape;
+package com.github.dwladdimiroc.stormMonitor.mape;
 
 import java.util.List;
 
@@ -15,8 +15,8 @@ import org.apache.storm.thrift.transport.TTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import citiaps.monitorStorm.eda.TopologyApp;
-import citiaps.monitorStorm.util.Config;
+import com.github.dwladdimiroc.stormMonitor.eda.TopologyApp;
+import com.github.dwladdimiroc.stormMonitor.util.Config;
 
 public class Monitor {
 	private final static Logger logger = LoggerFactory.getLogger(Monitor.class);

@@ -1,4 +1,4 @@
-package citiaps.monitorStorm;
+package com.github.dwladdimiroc.stormMonitor;
 
 import java.util.List;
 import java.util.Map;
@@ -10,14 +10,14 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import citiaps.monitorStorm.eda.TopologyApp;
-import citiaps.monitorStorm.mape.Analyze;
-import citiaps.monitorStorm.mape.Execute;
-import citiaps.monitorStorm.mape.Monitor;
-import citiaps.monitorStorm.mape.Plan;
-import citiaps.monitorStorm.util.Config;
-import citiaps.monitorStorm.util.Metrics;
-import citiaps.monitorStorm.util.NimbusUtils;
+import com.github.dwladdimiroc.stormMonitor.eda.TopologyApp;
+import com.github.dwladdimiroc.stormMonitor.mape.Analyze;
+import com.github.dwladdimiroc.stormMonitor.mape.Execute;
+import com.github.dwladdimiroc.stormMonitor.mape.Monitor;
+import com.github.dwladdimiroc.stormMonitor.mape.Plan;
+import com.github.dwladdimiroc.stormMonitor.util.Config;
+import com.github.dwladdimiroc.stormMonitor.util.Metrics;
+import com.github.dwladdimiroc.stormMonitor.util.NimbusUtils;
 
 public class StormAdaptative {
 	private final static Logger logger = LoggerFactory.getLogger(StormAdaptative.class);

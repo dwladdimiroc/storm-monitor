@@ -1,4 +1,4 @@
-package citiaps.monitorStorm.model;
+package com.github.dwladdimiroc.stormMonitor.model;
 
 import java.text.DecimalFormat;
 

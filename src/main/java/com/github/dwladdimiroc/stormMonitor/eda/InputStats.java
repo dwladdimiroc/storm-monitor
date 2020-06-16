@@ -1,4 +1,4 @@
-package citiaps.monitorStorm.eda;
+package com.github.dwladdimiroc.stormMonitor.eda;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package citiaps.monitorStorm.eda;
+package com.github.dwladdimiroc.stormMonitor.eda;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,8 +11,8 @@ import org.apache.storm.thrift.transport.TFramedTransport;
 import org.apache.storm.thrift.transport.TSocket;
 import org.apache.storm.thrift.transport.TTransport;
 
-import citiaps.monitorStorm.util.Config;
-import citiaps.monitorStorm.util.Metrics;
+import com.github.dwladdimiroc.stormMonitor.util.Config;
+import com.github.dwladdimiroc.stormMonitor.util.Metrics;
 
 public class TopologyApp {
 	private Map<String, Stats> topology;

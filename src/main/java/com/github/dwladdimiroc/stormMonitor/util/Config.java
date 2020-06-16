@@ -1,4 +1,4 @@
-package citiaps.monitorStorm.util;
+package com.github.dwladdimiroc.stormMonitor.util;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

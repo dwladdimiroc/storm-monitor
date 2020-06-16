@@ -1,21 +1,19 @@
-package citiaps.monitorStorm.util;
+package com.github.dwladdimiroc.stormMonitor.util;
+
+import com.github.dwladdimiroc.stormMonitor.StormAdaptative;
+import com.github.dwladdimiroc.stormMonitor.eda.Stats;
+import com.github.dwladdimiroc.stormMonitor.eda.TopologyApp;
+import com.codahale.metrics.CsvReporter;
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.storm.shade.com.codahale.metrics.CsvReporter;
-import org.apache.storm.shade.com.codahale.metrics.Gauge;
-import org.apache.storm.shade.com.codahale.metrics.MetricRegistry;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import citiaps.monitorStorm.StormAdaptative;
-import citiaps.monitorStorm.eda.Stats;
-import citiaps.monitorStorm.eda.TopologyApp;
 
 public class Metrics {
 	private final static Logger logger = LoggerFactory.getLogger(Metrics.class);

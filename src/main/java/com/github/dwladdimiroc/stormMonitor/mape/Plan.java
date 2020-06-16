@@ -1,12 +1,12 @@
-package citiaps.monitorStorm.mape;
+package com.github.dwladdimiroc.stormMonitor.mape;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-import citiaps.monitorStorm.eda.TopologyApp;
-import citiaps.monitorStorm.util.Config;
+import com.github.dwladdimiroc.stormMonitor.eda.TopologyApp;
+import com.github.dwladdimiroc.stormMonitor.util.Config;
 
 public class Plan {
 	private TopologyApp topologyApp;

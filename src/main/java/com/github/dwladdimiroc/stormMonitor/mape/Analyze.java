@@ -1,13 +1,13 @@
-package citiaps.monitorStorm.mape;
+package com.github.dwladdimiroc.stormMonitor.mape;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import citiaps.monitorStorm.eda.TopologyApp;
-import citiaps.monitorStorm.model.MarkovChain;
-import citiaps.monitorStorm.util.Config;
+import com.github.dwladdimiroc.stormMonitor.eda.TopologyApp;
+import com.github.dwladdimiroc.stormMonitor.model.MarkovChain;
+import com.github.dwladdimiroc.stormMonitor.util.Config;
 
 public class Analyze {
 	private TopologyApp topologyApp;
