@@ -85,7 +85,7 @@
 					<archive>
 						<manifest>
 							<mainClass>
-								com.github.dwladdimiroc.monitorStorm.StormAdaptative
+								com.github.dwladdimiroc.stormMonitor.StormAdaptative
 							</mainClass>
 						</manifest>
 					</archive>

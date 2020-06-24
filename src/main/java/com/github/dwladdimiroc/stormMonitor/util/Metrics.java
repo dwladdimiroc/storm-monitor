@@ -23,6 +23,8 @@ public class Metrics {
 
 	private Map<String, Long> input;
 	private Map<String, Long> throughput;
+	private Map<String, Long> queue;
+	private Map<String, Double> latency;
 	private Map<String, Double> utilization;
 	private Map<String, Integer> replication;
 
@@ -33,6 +35,8 @@ public class Metrics {
 
 		this.input = new HashMap<String, Long>();
 		this.throughput = new HashMap<String, Long>();
+		this.queue = new HashMap<String, Long>();
+		this.latency = new HashMap<String, Double>();
 		this.utilization = new HashMap<String, Double>();
 		this.replication = new HashMap<String, Integer>();
 
@@ -56,6 +60,24 @@ public class Metrics {
 					@Override
 					public Long getValue() {
 						return throughput.get(nameBolt);
+					}
+				});
+
+		this.queue.put(nameBolt, Long.valueOf(0));
+		Metrics.metricsRegistry.register(MetricRegistry.name(StormAdaptative.class, nameBolt + "@queue"),
+				new Gauge<Long>() {
+					@Override
+					public Long getValue() {
+						return queue.get(nameBolt);
+					}
+				});
+
+		this.latency.put(nameBolt, Double.valueOf(0));
+		Metrics.metricsRegistry.register(MetricRegistry.name(StormAdaptative.class, nameBolt + "@latency"),
+				new Gauge<Double>() {
+					@Override
+					public Double getValue() {
+						return latency.get(nameBolt);
 					}
 				});
 
@@ -114,6 +136,8 @@ public class Metrics {
 					statsBolt.getLastSample());
 
 		this.throughput.put(bolt, statsBolt.getThroughput());
+		this.queue.put(bolt, statsBolt.getExecuted());
+		this.latency.put(bolt, statsBolt.getTimeAvg());
 		this.utilization.put(bolt, statsBolt.getLastSample());
 		this.replication.put(bolt, statsBolt.getReplicas());
 	}
