@@ -23,8 +23,8 @@ public class NimbusUtils {
 	public String searchID(String name) {
 		String id = "default";
 
-		TTransport tsocket = new TSocket(IP_NIMBUS, PORT_NIMBUS);
-		TFramedTransport tTransport = new TFramedTransport(tsocket);
+		TTransport tSocket = new TSocket(IP_NIMBUS, PORT_NIMBUS);
+		TFramedTransport tTransport = new TFramedTransport(tSocket);
 		TBinaryProtocol tBinaryProtocol = new TBinaryProtocol(tTransport);
 		Nimbus.Client client = new Nimbus.Client(tBinaryProtocol);
 

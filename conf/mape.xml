@@ -10,5 +10,5 @@
 	<alertReactive>2</alertReactive>
 	<thresholdPredictive>0.25</thresholdPredictive>
 	<iterationPredictive>100000</iterationPredictive>
-	<Esync>5.0</Esync>
+	<Esync>0.0</Esync>
 </config>

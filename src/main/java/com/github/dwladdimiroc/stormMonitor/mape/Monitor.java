@@ -19,124 +19,130 @@ import com.github.dwladdimiroc.stormMonitor.eda.TopologyApp;
 import com.github.dwladdimiroc.stormMonitor.util.Config;
 
 public class Monitor {
-	private final static Logger logger = LoggerFactory.getLogger(Monitor.class);
-	private final boolean showLogger = false;
+    private final static Logger logger = LoggerFactory.getLogger(Monitor.class);
+    private final boolean showLogger = false;
 
-	private String IP_NIMBUS;
-	private int PORT_NIMBUS;
+    private String IP_NIMBUS;
+    private int PORT_NIMBUS;
 
-	private String idApp;
-	private TopologyApp topologyApp;
+    private String idApp;
+    private TopologyApp topologyApp;
 
-	private Config confMape;
+    private Config confMape;
 
-	private int countAnalyze;
+    private int countAnalyze;
 
-	public Monitor() {
-		this.IP_NIMBUS = "localhost";
-		this.PORT_NIMBUS = 6627;
+    public Monitor() {
+        this.IP_NIMBUS = "localhost";
+        this.PORT_NIMBUS = 6627;
 
-		this.idApp = "default";
-		this.topologyApp = new TopologyApp(confMape);
+        this.idApp = "default";
+        this.topologyApp = new TopologyApp(null);
 
-		this.countAnalyze = 0;
-	}
+        this.countAnalyze = 0;
+    }
 
-	public Monitor(String IP_NIMBUS, int PORT_NIMBUS, String idApp, TopologyApp topologyApp, Config confMape) {
-		this.IP_NIMBUS = IP_NIMBUS;
-		this.PORT_NIMBUS = PORT_NIMBUS;
+    public Monitor(String IP_NIMBUS, int PORT_NIMBUS, String idApp, TopologyApp topologyApp, Config confMape) {
+        this.IP_NIMBUS = IP_NIMBUS;
+        this.PORT_NIMBUS = PORT_NIMBUS;
 
-		this.idApp = idApp;
-		this.topologyApp = topologyApp;
+        this.idApp = idApp;
+        this.topologyApp = topologyApp;
 
-		this.confMape = confMape;
+        this.confMape = confMape;
 
-		this.countAnalyze = 0;
-	}
+        this.countAnalyze = 0;
+    }
 
-	public String gettingStats() {
-		TTransport tsocket = new TSocket(IP_NIMBUS, PORT_NIMBUS);
-		TFramedTransport tTransport = new TFramedTransport(tsocket);
-		TBinaryProtocol tBinaryProtocol = new TBinaryProtocol(tTransport);
-		Nimbus.Client client = new Nimbus.Client(tBinaryProtocol);
-		String topologyId = this.idApp;
+    public String gettingStats() {
+        TTransport tSocket = new TSocket(IP_NIMBUS, PORT_NIMBUS);
+        TFramedTransport tTransport = new TFramedTransport(tSocket);
+        TBinaryProtocol tBinaryProtocol = new TBinaryProtocol(tTransport);
+        Nimbus.Client client = new Nimbus.Client(tBinaryProtocol);
+        String topologyId = this.idApp;
 
-		try {
-			tTransport.open();
+        try {
+            tTransport.open();
+            TopologyInfo topologyInfo = client.getTopologyInfo(topologyId);
 
-			TopologyInfo topologyInfo = client.getTopologyInfo(topologyId);
-			List<ExecutorSummary> executorSummaries = topologyInfo.get_executors();
-			for (ExecutorSummary executorSummary : executorSummaries) {
-				String id = executorSummary.get_component_id();
-				if (!id.equals("__acker") && !id.equals("__eventlogger")) {
-					ExecutorStats executorStats = executorSummary.get_stats();
-					if (executorStats.get_specific().is_set_bolt()) {
+            List<ExecutorSummary> executorSummaries = topologyInfo.get_executors();
+            for (ExecutorSummary executorSummary : executorSummaries) {
+                String id = executorSummary.get_component_id();
+                if (!id.equals("__acker") && !id.equals("__eventlogger")) {
+                    ExecutorStats executorStats = executorSummary.get_stats();
+                    if (executorStats == null) {
+                        return "waiting...";
+                    } else {
+                        if (executorStats.get_specific().is_set_bolt()) {
+                            if (executorStats.get_specific().get_bolt().get_executed().get("600") != null
+                                    && executorStats.get_specific().get_bolt().get_execute_ms_avg().get("600") != null
+                                    && executorStats.get_specific().get_bolt().get_execute_ms_avg()
+                                    .get(":all-time") != null) {
 
-						if (executorStats.get_specific().get_bolt().get_executed().get("600") != null
-								&& executorStats.get_specific().get_bolt().get_execute_ms_avg().get("600") != null
-								&& executorStats.get_specific().get_bolt().get_execute_ms_avg()
-										.get(":all-time") != null) {
+                                double timeAvg = 0;
+                                long executed = 0;
 
-							double timeAvg = 0;
-							long executed = 0;
+                                long executedTotal = 0;
 
-							long executedTotal = 0;
+                                for (GlobalStreamId key : executorStats.get_specific().get_bolt().get_executed().get("600")
+                                        .keySet()) {
 
-							for (GlobalStreamId key : executorStats.get_specific().get_bolt().get_executed().get("600")
-									.keySet()) {
+                                    executed += executorStats.get_specific().get_bolt().get_executed().get("600").get(key);
+                                    timeAvg += executorStats.get_specific().get_bolt().get_execute_ms_avg().get("600")
+                                            .get(key) * (double) executed;
 
-								executed += executorStats.get_specific().get_bolt().get_executed().get("600").get(key);
-								timeAvg += executorStats.get_specific().get_bolt().get_execute_ms_avg().get("600")
-										.get(key) * (double) executed;
+                                    executedTotal += executorStats.get_specific().get_bolt().get_executed().get(":all-time")
+                                            .get(key);
 
-								executedTotal += executorStats.get_specific().get_bolt().get_executed().get(":all-time")
-										.get(key);
+                                    if (showLogger)
+                                        logger.info("[Key={}],[Bolt={}],[Executed={}],[TimeAvg={}]", key, id, executed,
+                                                timeAvg);
 
-								if (showLogger)
-									logger.info("[Key={}],[Bolt={}],[Executed={}],[TimeAvg={}]", key, id, executed,
-											timeAvg);
+                                }
 
-							}
+                                timeAvg /= executed;
 
-							timeAvg /= executed;
+                                this.topologyApp.sendStats(id, timeAvg, executed, executedTotal);
+                            }
+                        } else if (executorStats.get_specific().is_set_spout()) {
+                            if (executorStats.get_transferred().get("600") != null) {
+                                long input = executorStats.get_transferred().get("600").get("default");
+                                this.topologyApp.sendInput(id, input);
 
-							this.topologyApp.sendStats(id, timeAvg, executed, executedTotal);
-						}
-					} else if (executorStats.get_specific().is_set_spout()) {
-						if (executorStats.get_transferred().get("600") != null) {
-							long input = executorStats.get_transferred().get("600").get("default");
-							this.topologyApp.sendInput(id, input);
+                                if (showLogger)
+                                    logger.info("[Spout={}],[Input={}]", id, input);
+                            }
+                        }
+                    }
+                }
+            }
 
-							if (showLogger)
-								logger.info("[Spout={}],[Input={}]", id, input);
-						}
-					}
+            for (String id : this.topologyApp.keySet()) {
+                this.topologyApp.createSample(id);
+            }
 
-				}
-			}
+            for (String id : this.topologyApp.keySet()) {
+                this.topologyApp.updateQueue(id);
+            }
 
-			for (String id : this.topologyApp.keySet()) {
-				this.topologyApp.createSample(id);
-			}
+            if (showLogger)
+                logger.info(this.topologyApp.printStats());
 
-			if (showLogger)
-				logger.info(this.topologyApp.printStats());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "waiting...";
+        } finally {
+            tTransport.close();
+        }
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "waiting...";
-		} finally {
-			tTransport.close();
-		}
-
-		countAnalyze++;
-		if (countAnalyze % confMape.getSamplesPredictive() == 0) {
-			countAnalyze = 0;
-			return "predictive";
-		} else if (countAnalyze % confMape.getSamplesReactive() == 0) {
-			return "reactive";
-		} else {
-			return "nothing";
-		}
-	}
+        countAnalyze++;
+        if (countAnalyze % confMape.getSamplesPredictive() == 0) {
+            countAnalyze = 0;
+            return "predictive";
+        } else if (countAnalyze % confMape.getSamplesReactive() == 0) {
+            return "reactive";
+        } else {
+            return "nothing";
+        }
+    }
 }

@@ -33,8 +33,7 @@ public class StormAdaptative {
         IP_NIMBUS = args[1];
         PORT_NIMBUS = Integer.parseInt(args[2]);
 
-        if (args[3
-                ] == "stats") {
+        if (args.length > 3 && args[3].equals("stats")) {
             notAnalyze = true;
         }
 
@@ -44,16 +43,18 @@ public class StormAdaptative {
         Config confMape = new Config();
         confMape.readConfig("conf/mape.xml");
 
-        Metrics metrics = new Metrics("stats/" + topologyId);
+        Metrics metrics = new Metrics("stats/" + topologyId, confMape);
 
         TopologyApp topologyApp = new TopologyApp(confMape);
-        topologyApp.createTopology(IP_NIMBUS, PORT_NIMBUS, topologyId, metrics);
+        boolean ok = topologyApp.createTopology(IP_NIMBUS, PORT_NIMBUS, topologyId, metrics);
 
-        ScheduledExecutorService mapeService = Executors.newSingleThreadScheduledExecutor();
-        mapeService.scheduleAtFixedRate(new MAPE(topologyId, topologyApp, confMape, metrics), 0, 5000,
-                TimeUnit.MILLISECONDS);
+        if (ok) {
+            ScheduledExecutorService mapeService = Executors.newSingleThreadScheduledExecutor();
+            mapeService.scheduleAtFixedRate(new MAPE(topologyId, topologyApp, confMape, metrics), 0, confMape.getWindowMonitor(),
+                    TimeUnit.SECONDS);
 
-        metrics.start();
+            metrics.start();
+        }
     }
 
     private static class MAPE extends TimerTask {
@@ -82,35 +83,37 @@ public class StormAdaptative {
             String status = this.monitor.gettingStats();
             logger.info("{Status=" + status + "}");
 
-            this.metrics.sendStats(this.topologyApp);
+            if (!status.equals("waiting...")) {
+                this.metrics.sendStats(this.topologyApp);
+                this.topologyApp.clearTemps();
 
-            if (notAnalyze) {
+                if (!notAnalyze) {
+                    if (status.equals("reactive")) {
+                        Map<String, String> statusBolts = this.analyze.reactive();
+                        logger.info("[Reactive] " + statusBolts.toString());
+                        if (!statusBolts.isEmpty()) {
+                            List<String> planningBolts = this.plan.planning(statusBolts, false);
+                            logger.info("[Planning] " + planningBolts.toString());
+                            if (!planningBolts.isEmpty()) {
+                                logger.info("[Rebalanced Topology]");
+                                this.execute.rebalancedTopology(planningBolts);
+                            }
+                        }
 
-                if (status.equals("reactive")) {
-                    Map<String, String> statusBolts = this.analyze.reactive();
-                    logger.info("[Reactive] " + statusBolts.toString());
-                    if (!statusBolts.isEmpty()) {
-                        List<String> planningBolts = this.plan.planning(statusBolts, false);
-                        logger.info("[Planning] " + planningBolts.toString());
-                        if (!planningBolts.isEmpty()) {
-                            logger.info("[Rebalanced Topology]");
-                            this.execute.rebalanceTopology(planningBolts);
+                    } else if (status.equals("predictive")) {
+                        Map<String, String> statusBolts = this.analyze.predictive();
+                        logger.info("[Predictive] " + statusBolts.toString());
+                        if (!statusBolts.isEmpty()) {
+                            List<String> planningBolts = this.plan.planning(statusBolts, true);
+                            logger.info("[Planning] " + planningBolts.toString());
+                            if (!planningBolts.isEmpty()) {
+                                logger.info("[Rebalanced Topology]");
+                                this.execute.rebalancedTopology(planningBolts);
+                            }
                         }
                     }
 
-                } else if (status.equals("predictive")) {
-                    Map<String, String> statusBolts = this.analyze.predictive();
-                    logger.info("[Predictive] " + statusBolts.toString());
-                    if (!statusBolts.isEmpty()) {
-                        List<String> planningBolts = this.plan.planning(statusBolts, true);
-                        logger.info("[Planning] " + planningBolts.toString());
-                        if (!planningBolts.isEmpty()) {
-                            logger.info("[Rebalanced Topology]");
-                            this.execute.rebalanceTopology(planningBolts);
-                        }
-                    }
                 }
-
             }
         }
     }

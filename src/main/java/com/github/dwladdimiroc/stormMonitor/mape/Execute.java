@@ -27,9 +27,9 @@ public class Execute {
 		this.topologyApp = topologyApp;
 	}
 
-	public void rebalanceTopology(List<String> planningBolts) {
-		TTransport tsocket = new TSocket(IP_NIMBUS, PORT_NIMBUS);
-		TFramedTransport tTransport = new TFramedTransport(tsocket);
+	public void rebalancedTopology(List<String> planningBolts) {
+		TTransport tSocket = new TSocket(IP_NIMBUS, PORT_NIMBUS);
+		TFramedTransport tTransport = new TFramedTransport(tSocket);
 		TBinaryProtocol tBinaryProtocol = new TBinaryProtocol(tTransport);
 		Nimbus.Client client = new Nimbus.Client(tBinaryProtocol);
 		String topologyId = this.idApp;

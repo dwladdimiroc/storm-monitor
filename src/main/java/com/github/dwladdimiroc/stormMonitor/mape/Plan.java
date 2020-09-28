@@ -32,7 +32,7 @@ public class Plan {
 	private List<String> planAboutReactive(Map<String, String> statusBolts) {
 		List<String> planningBolts = new ArrayList<String>();
 
-		for (String bolt : this.topologyApp.keySet()) {
+		for (String bolt : statusBolts.keySet()) {
 			if (statusBolts.get(bolt).equals("ocioso")) {
 				this.topologyApp.getStats(bolt).getMarkMap().add(-1);
 			} else if (statusBolts.get(bolt).equals("inestable")) {

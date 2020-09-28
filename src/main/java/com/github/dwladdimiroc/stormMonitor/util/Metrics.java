@@ -30,7 +30,9 @@ public class Metrics {
 
 	private CsvReporter reporter;
 
-	public Metrics(String pathFolder) {
+	private Config confMape;
+
+	public Metrics(String pathFolder, Config confMape) {
 		new File(pathFolder).mkdir();
 
 		this.input = new HashMap<String, Long>();
@@ -40,17 +42,18 @@ public class Metrics {
 		this.utilization = new HashMap<String, Double>();
 		this.replication = new HashMap<String, Integer>();
 
+		this.confMape = confMape;
 		this.reporter = CsvReporter.forRegistry(metricsRegistry).formatFor(Locale.US).convertRatesTo(TimeUnit.SECONDS)
 				.convertDurationsTo(TimeUnit.SECONDS).build(new File(pathFolder));
 	}
 
 	public void start() {
-		try {
-			Thread.sleep(1000);
-			this.reporter.start(5, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			Thread.sleep(1000);
+			this.reporter.start(this.confMape.getWindowMonitor(), TimeUnit.SECONDS);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	public void createStatsBolt(final String nameBolt) {
@@ -132,11 +135,11 @@ public class Metrics {
 
 	private void sendStatsBolt(String bolt, Stats statsBolt) {
 		if (showLogger)
-			logger.info("[Bolt={}],[Executed={}],[LastSimple={}]", bolt, statsBolt.getThroughput(),
-					statsBolt.getLastSample());
+			logger.info("[Bolt={}],[Executed={}],[LastSimple={}],[Queue={}],[Raw={},{}]", bolt, statsBolt.getThroughput(),
+					statsBolt.getLastSample(), statsBolt.getQueue(), statsBolt.getTimeAvg(), statsBolt.getExecutedTotal());
 
 		this.throughput.put(bolt, statsBolt.getThroughput());
-		this.queue.put(bolt, statsBolt.getExecuted());
+		this.queue.put(bolt, statsBolt.getQueue());
 		this.latency.put(bolt, statsBolt.getTimeAvg());
 		this.utilization.put(bolt, statsBolt.getLastSample());
 		this.replication.put(bolt, statsBolt.getReplicas());
